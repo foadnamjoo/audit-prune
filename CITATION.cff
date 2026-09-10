@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: >-
+  If you use this repository, the released subsets, or the audit methodology, please cite the
+  manuscript (preferred) and TruthfulQA when using TruthfulQA-derived data. Canonical BibTeX
+  lives in paper_assets/references.bib; GitHub also reads this file for the “Cite this repository” button.
+title: "Audit-Prune: surface-form audit and cleaning for paired-choice truthfulness benchmarks"
+abstract: >-
+  Code and data for the manuscript “Judging by the Cover: Auditing Surface-Form Shortcuts in
+  Binary-Choice Truth Benchmarks,” including feature-balanced TruthfulQA subsets and audit artifacts.
+type: software
+authors:
+  - family-names: "Namjoo"
+    given-names: "Foad"
+  - family-names: "Ogasawara"
+    given-names: "Remy"
+  - family-names: "Abdullah"
+    given-names: "Amirali"
+  - family-names: "Anderson"
+    given-names: "Cullen"
+  - family-names: "Oozeer"
+    given-names: "Narmeen Fatimah"
+  - family-names: "Phillips"
+    given-names: "Jeff M."
+repository-code: "https://github.com/foadnamjoo/audit-prune"
+url: "https://github.com/foadnamjoo/audit-prune"
+license: "Apache-2.0"
+version: "v1.0.0"
+date-released: 2026-03-19
+keywords:
+  - "TruthfulQA"
+  - "benchmark audit"
+  - "surface form"
+  - "multiple choice"
+preferred-citation:
+  type: article
+  title: "Judging by the Cover: Cleaning LLM Truthfulness Benchmarks to Avoid Surface-Level Feature Leakage"
+  authors:
+    - family-names: "Namjoo"
+      given-names: "Foad"
+    - family-names: "Phillips"
+      given-names: "Jeff M."
+  year: 2026
+  journal: "Working paper"
+  url: "https://github.com/foadnamjoo/audit-prune"
+references:
+  - type: article
+    title: "TruthfulQA: Measuring How Models Mimic Human Falsehoods"
+    authors:
+      - family-names: Lin
+        given-names: Stephanie
+      - family-names: Hilton
+        given-names: Jacob
+      - family-names: Evans
+        given-names: Owain
+    year: 2022
+    journal: "arXiv preprint arXiv:2109.07958"
