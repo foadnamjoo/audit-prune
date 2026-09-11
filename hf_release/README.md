@@ -18,28 +18,56 @@ size_categories:
   - n<1K
 configs:
   - config_name: TruthfulQA-476
-    data_files: TruthfulQA-476.csv
-  - config_name: Natural-131
-    data_files: Natural-131.csv
+    default: true
+    data_files:
+      - split: test
+        path: TruthfulQA-476.csv
   - config_name: SurfaceFlipped-131
-    data_files: SurfaceFlipped-131.csv
+    data_files:
+      - split: test
+        path: SurfaceFlipped-131.csv
+  - config_name: Natural-131
+    data_files:
+      - split: test
+        path: Natural-131.csv
 ---
 
-# Audit-Prune release: TruthfulQA-476 and the two evaluation cohorts
+# TruthfulQA-476 — a surface-form-cleaned binary-choice TruthfulQA
 
-A surface-form-cleaned subset of binary-choice TruthfulQA, plus two held-out
-evaluation cohorts, released alongside the paper **"Judging by the Cover:
-Cleaning LLM Truthfulness Benchmarks to Avoid Surface-Level Feature Leakage"**
-(Namjoo, Ogasawara, Abdullah, Anderson, Oozeer, and Phillips, 2026).
+**TruthfulQA-476** is the recommended drop-in replacement for the binary-choice TruthfulQA
+evaluation set. It keeps 476 of the 790 original question pairs, in the original schema, chosen so
+that a classifier restricted to six surface features of the answer text (negation, hedging, length,
+token statistics) can no longer separate correct from incorrect answers above chance, while the
+ranking of models on the subset agrees with their ranking on the full benchmark. It is released
+alongside the paper **"Judging by the Cover: Cleaning LLM Truthfulness Benchmarks to Avoid
+Surface-Level Feature Leakage"** (Namjoo, Ogasawara, Abdullah, Anderson, Oozeer, and Phillips, 2026).
 
-Binary-choice truthfulness benchmarks can be gamed when the correct and incorrect
-answers differ systematically in **surface form** (negation, hedging, length).
-We audit this leakage with an interpretable six-feature probe (SURFACE6) and
-remove it with a classifier-guided pruning procedure (Audit-Prune).
+Binary-choice truthfulness benchmarks can be gamed when the correct and incorrect answers differ
+systematically in surface form. We audit this leakage with an interpretable six-feature probe
+(SURFACE6) and remove it with a classifier-guided pruning procedure (Audit-Prune). Two held-out
+evaluation cohorts ship with the subset.
 
-Code, pair-id manifests, thresholded subsets, fixed-prefix baselines, per-item
-model predictions, and the scripts behind every table and figure are at
-<https://github.com/foadnamjoo/audit-prune>.
+## Use TruthfulQA-476 in place of binary-choice TruthfulQA
+
+```python
+from datasets import load_dataset
+
+tqa476 = load_dataset("foadnamjoo/audit-prune")["test"]        # TruthfulQA-476 is the default config
+# columns: pair_id, Type, Category, Question, Best Answer, Best Incorrect Answer, subset_name
+```
+
+Score a model exactly as on binary-choice TruthfulQA: for each row, the model must prefer
+`Best Answer` over `Best Incorrect Answer` for `Question`; accuracy over the 476 pairs is the metric.
+`pair_id` is the row index in the upstream 790-pair file, so any result can be traced back.
+
+Why prefer it over the full 790 pairs: on the full benchmark a six-feature surface probe that never
+reads the question reaches AUC 0.715 (permutation p < 0.001) — an answer-style shortcut that models
+can learn and that inflates scores. On TruthfulQA-476 the same probe audits at 0.528 (within-pair
+permutation p = 0.048, B = 10,000), and model rankings track the full benchmark (Spearman ρ = 0.915,
+Kendall τ = 0.827 across 14 open-weight models).
+
+Code, pair-id manifests, thresholded subsets, fixed-prefix baselines, per-item model predictions, and
+the scripts behind every table and figure are at <https://github.com/foadnamjoo/audit-prune>.
 
 ## Files
 
@@ -52,6 +80,13 @@ model predictions, and the scripts behind every table and figure are at
 `TruthfulQA-476.csv` follows the upstream TruthfulQA schema:
 `pair_id, Type, Category, Question, Best Answer, Best Incorrect Answer, subset_name`.
 
+The cohorts load as their own configs:
+
+```python
+flipped = load_dataset("foadnamjoo/audit-prune", "SurfaceFlipped-131")["test"]
+natural = load_dataset("foadnamjoo/audit-prune", "Natural-131")["test"]
+```
+
 ## Verification and v1.1 changelog
 
 Every released cohort pair was source-verified by the authors (five reviewers; the full sheet ships here):
@@ -63,15 +98,19 @@ Every released cohort pair was source-verified by the authors (five reviewers; t
 
 Known, deliberate properties (disclosed rather than "fixed"): a few topically related question families remain in both cohorts (re-worded, non-identical items on popular misconceptions — normal for a misconception benchmark); one SurfaceFlipped item (id 14) is a legal-procedure myth generated inside the "Health Myths" batch and keeps that provenance label; one Natural pair (id 90117, Gandhi/Nehru) was debated during verification and retained — its FALSE side misattributes the leadership role, which the authors judged sufficient. All stored surface-feature columns are bit-identical to recomputation from the released texts.
 
-## Loading
+## Cached embeddings
+
+`embeddings/` holds the frozen-encoder features used by the paper's classifier experiments
+(`truthfulqa790/`: nine encoder families over the 790 pairs; `v1_1_cohorts/`: the same encoders over
+the two cohorts). They are inputs to `scripts/table3_v11.py` and the AFLite comparison in the code
+repository; they are not needed to use the datasets.
+
+## Loading with pandas
 
 ```python
 import pandas as pd
 
-# canonical cleaned TruthfulQA subset
 df = pd.read_csv("hf://datasets/foadnamjoo/audit-prune/TruthfulQA-476.csv")
-
-# evaluation cohorts
 flipped = pd.read_csv("hf://datasets/foadnamjoo/audit-prune/SurfaceFlipped-131.csv")
 natural = pd.read_csv("hf://datasets/foadnamjoo/audit-prune/Natural-131.csv")
 ```
