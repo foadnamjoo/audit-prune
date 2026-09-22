@@ -11,6 +11,10 @@ audit (**Surface6**), the **Audit-Prune** cleaner (Algorithm 1), the released **
 subset, the two held-out evaluation cohorts, and the script and result file behind every table and
 figure in the paper.
 
+![Overview of Audit-Prune: TruthfulQA answer pairs with their surface cues and Surface6 feature vectors, the Audit-Prune removal loop, and the retained pairs that form TruthfulQA-476.](paper_assets/figures/readme_overview.png)
+
+*Figure 1 of the paper. Left: TruthfulQA pairs with their surface cues highlighted and their Surface6 features. Middle: Audit-Prune removes the pair with the largest surface imbalance, refits, repeats until the audit AUC is at most 0.53, then adds back pairs that keep it there. Right: the retained pairs form TruthfulQA-476.*
+
 Released datasets are mirrored on the Hugging Face Hub:
 <https://huggingface.co/datasets/foadnamjoo/audit-prune>.
 
