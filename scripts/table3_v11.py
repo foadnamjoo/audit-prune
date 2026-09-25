@@ -46,7 +46,7 @@ out = {"meta": {"protocol": "f02_clustered_table4 (read-only published heads; ra
                 "cohorts": "hf_release v1.1 (n=131 each)",
                 "n_items": 131, "lr_seed": SEED,
                 "test_embeddings": "results/v1_1_rescore/emb/ (edited rows re-encoded, 8 dropped rows removed)",
-                "provisional": ["BGE-Multi-Gemma2 (stale v1.0 embeddings on edited rows until CHPC re-encode)"]},
+                "provisional": []},
        "rows": {}}
 per_item = []
 T0 = time.time()
